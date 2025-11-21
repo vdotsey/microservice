@@ -1,0 +1,148 @@
+version: "3.9"
+
+services:
+
+  frontend:
+    image: frontendservice
+    build:
+      context: ./frontend
+    ports:
+      - "8080:8080"
+    environment:
+      - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:3550
+      - CART_SERVICE_ADDR=cartservice:7070
+      - CHECKOUT_SERVICE_ADDR=checkoutservice:5050
+      - CURRENCY_SERVICE_ADDR=currencyservice:7000
+      - RECOMMENDATION_SERVICE_ADDR=recommendationservice:8080
+    depends_on:
+      - productcatalogservice
+      - cartservice
+      - checkoutservice
+      - currencyservice
+      - recommendationservice
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  checkoutservice:
+    image: checkoutservice
+    build:
+      context: ./checkoutservice
+    ports:
+      - "5050:5050"
+    environment:
+      - SHIPPING_SERVICE_ADDR=shippingservice:50051
+      - PRODUCT_CATALOG_SERVICE_ADDR=productcatalogservice:3550
+      - CART_SERVICE_ADDR=cartservice:7070
+      - CURRENCY_SERVICE_ADDR=currencyservice:7000
+      - EMAIL_SERVICE_ADDR=emailservice:5000
+      - PAYMENT_SERVICE_ADDR=paymentservice:50051
+      - CHECKOUT_SERVICE_PORT=5050
+    depends_on:
+      - shippingservice
+      - productcatalogservice
+      - cartservice
+      - currencyservice
+      - emailservice
+      - paymentservice
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  productcatalogservice:
+    image: productcatalogservice
+    build:
+      context: ./productcatalogservice
+    ports:
+      - "3550:3550"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  shippingservice:
+    image: shippingservice
+    build:
+      context: ./shippingservice
+    ports:
+      - "50051:50051"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  cartservice:
+    image: cartservice
+    build:
+      context: ./cartservice
+    ports:
+      - "7070:7070"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  currencyservice:
+    image: currencyservice
+    build:
+      context: ./currencyservice
+    ports:
+      - "7000:7000"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  paymentservice:
+    image: paymentservice
+    build:
+      context: ./paymentservice
+    ports:
+      - "50051:50051"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  emailservice:
+    image: emailservice
+    build:
+      context: ./emailservice
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  recommendationservice:
+    image: recommendationservice
+    build:
+      context: ./recommendationservice
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
